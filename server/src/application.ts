@@ -14,6 +14,10 @@ import { InstallationService } from './sesami/installation';
 import { webhookRoute } from './sesami/api/webhook';
 import { isAuthenticatedRequest } from './sesami/authentication/helper';
 
+import zapierRoutes from './routes/zapier.router';
+import klaviyoRoutes from './routes/klaviyo.router';
+import sesamiRoutes from './routes/sesami.router';
+
 const app = express();
 
 export const prisma = new PrismaClient();
@@ -24,6 +28,7 @@ if (config.environment !== 'production') {
 
 app.use(passport.initialize());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(winstonMiddleware);
 
 app.get('/404', async (_req: Request, _res: Response, next: NextFunction) => {
@@ -57,6 +62,11 @@ app.get(
 app.get('/health', async (_req: Request, res: Response) => {
     res.status(200).send('Ok');
 });
+
+// Routes
+app.use('/zapier', zapierRoutes);
+app.use('/klaviyo', klaviyoRoutes);
+app.use('/sesami', sesamiRoutes);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     errorHandler.handleError(err, res);

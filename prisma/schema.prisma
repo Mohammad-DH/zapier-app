@@ -9,11 +9,28 @@ datasource db {
 }
 
 model Shop {
-  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
   name                   String?
-  shopId                 String   @unique
+  shopId                 String    @unique
   installationStatus     String?
   apiKey                 String?
   scope                  String?
   lastGetPermissionRetry DateTime?
+
+  // From the second schema
+  authCode  String?   @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  services  Service[] // relation to services
+}
+
+model Service {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shopRef String @db.ObjectId
+  shop    Shop   @relation(fields: [shopRef], references: [id], onDelete: Cascade)
 }

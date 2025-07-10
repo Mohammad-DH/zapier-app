@@ -2,6 +2,7 @@ import { ShopRepository } from './Shop.repository';
 import { SesamiService } from './Sesami.service';
 import { ShopNotFoundById } from '../exceptions';
 import { validateHmac } from '../authentication/Hmac.validation';
+import { generateAuthCode } from '@/server/src/common/utils/generateAuthCode';
 
 export enum InstallationStatus {
     INITIATED = 'INITIATED',
@@ -37,8 +38,10 @@ export class InstallationService {
             return { done: false };
         }
 
+        const authCode = await generateAuthCode(shopId);
         await InstallationService.shopRepository.createOrUpdate(shopId, {
             installationStatus: InstallationStatus.INITIATED,
+            authCode,
         });
         const scopes = CURRENT_APP_PERMISSIONS;
 
